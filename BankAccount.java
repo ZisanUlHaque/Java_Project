@@ -1,74 +1,97 @@
 //3. Design a program to simulate a bank account. 
 //The system should allow the user to deposit and withdraw money while handling exceptions.
 package Project;
-
 import java.util.Scanner;
 
-public class BankAccount {
+class BankAccount {
+    private String accountHolder;
+    private double balance;
 
-    String name, type;
-    double amount;
-
-    // Constructor to initialize the account details
-    BankAccount() {
-        name = "Zisan";
-        type = "student";
-        amount = 0.0;
-    }
-
-    double balance() {
-        return amount;
-    }
-
-    void deposit(double a) {
-        if (a > 0) {
-            amount = amount + a;
-            System.out.println(a + " taka has been deposited.");
-        } else {
-            System.out.println("Invalid deposit amount.");
+    public BankAccount(String accountHolder, double initialBalance) {
+        this.accountHolder = accountHolder;
+        if (initialBalance < 0) {
+            throw new IllegalArgumentException("Initial balance cannot be negative.");
         }
+        this.balance = initialBalance;
     }
 
-    void withdrew(double a) {
-        if (amount < a) {
-            System.out.println("Insufficient balance.");
-        } else if (a > 0) {
-            amount = amount - a;
-            System.out.println(a + " taka has been withdrawn.");
+    public void deposit(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be positive.");
         }
+        balance += amount;
+        System.out.println("Deposited: $" + amount + " | New Balance: $" + balance);
     }
 
-    // Main method
+    public void withdraw(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Withdrawal amount must be positive.");
+        }
+        if (amount > balance) {
+            throw new IllegalArgumentException("Insufficient balance.");
+        }
+        balance -= amount;
+        System.out.println("Withdrew: $" + amount + " | New Balance: $" + balance);
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public String getAccountHolder() {
+        return accountHolder;
+    }
+
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);  // Create Scanner object for user input
-
-        BankAccount b = new BankAccount();
+        Scanner scanner = new Scanner(System.in);
 
         try {
-            System.out.println("Current amount is " + b.balance());
+            System.out.print("Enter account holder's name: ");
+            String name = scanner.nextLine();
 
-            System.out.print("Enter amount to withdraw: ");
-            double w = sc.nextDouble();
-            b.withdrew(w);
+            System.out.print("Enter initial balance: ");
+            double initialBalance = scanner.nextDouble();
 
-            System.out.print("Enter amount to deposit: ");
-            double d = sc.nextDouble();
-            b.deposit(d);
+            BankAccount account = new BankAccount(name, initialBalance);
 
-            System.out.println("Current balance is " + b.balance());
+            boolean running = true;
+            while (running) {
+                System.out.println("\n--- Bank Account Menu ---");
+                System.out.println("1. Deposit");
+                System.out.println("2. Withdraw");
+                System.out.println("3. Check Balance");
+                System.out.println("4. Exit");
+                System.out.print("Enter your choice: ");
 
-            // Another withdrawal attempt
-            System.out.print("Enter amount to withdraw: ");
-            w = sc.nextDouble();
-            b.withdrew(w);
+                int choice = scanner.nextInt();
 
-            // Display final balance
-            System.out.println("Final balance is " + b.balance());
-
+                switch (choice) {
+                    case 1:
+                        System.out.print("Enter deposit amount: ");
+                        double depositAmount = scanner.nextDouble();
+                        account.deposit(depositAmount);
+                        break;
+                    case 2:
+                        System.out.print("Enter withdrawal amount: ");
+                        double withdrawalAmount = scanner.nextDouble();
+                        account.withdraw(withdrawalAmount);
+                        break;
+                    case 3:
+                        System.out.println("Current Balance: $" + account.getBalance());
+                        break;
+                    case 4:
+                        running = false;
+                        System.out.println("Exiting... Thank you!");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
+                }
+            }
         } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         } finally {
-            sc.close();  // Close the scanner object to avoid resource leak
+            scanner.close();
         }
     }
 }
+
